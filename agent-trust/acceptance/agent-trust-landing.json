@@ -1,0 +1,32 @@
+{
+  "artifact": "docs/agent-trust/index.html",
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "load",
+      "description": "Page loads, manifest.json is fetched, formatted view renders",
+      "steps": [
+        {"action": "navigate", "url": "/agent-trust/index.html"},
+        {"wait": {"selector": "#manifest-formatted", "state": "visible", "timeout_ms": 5000}},
+        {"assert": {"selector": "#stat-mode", "text_contains": ["enforce", "advisory"]}},
+        {"assert": {"selector": "#stat-gates", "text_contains": ["5"]}},
+        {"assert": {"selector": "#manifest-raw", "state": "visible"}}
+      ]
+    },
+    {
+      "id": "tab-switching",
+      "description": "Tabs switch correctly between formatted, raw, and verify views",
+      "steps": [
+        {"action": "navigate", "url": "/agent-trust/index.html"},
+        {"wait": {"selector": "#manifest-formatted", "state": "visible", "timeout_ms": 5000}},
+        {"action": "click", "selector": ".tab:nth-child(2)"},
+        {"wait": {"selector": "#tab-raw.active", "timeout_ms": 2000}},
+        {"assert": {"selector": "#manifest-raw", "text_contains": ["{"], "state": "visible"}},
+        {"action": "click", "selector": ".tab:nth-child(3)"},
+        {"wait": {"selector": "#tab-verify.active", "timeout_ms": 2000}},
+        {"assert": {"selector": "#verification-result", "state": "visible"}}
+      ]
+    }
+  ],
+  "assets": ["docs/agent-trust/manifest.json"]
+}

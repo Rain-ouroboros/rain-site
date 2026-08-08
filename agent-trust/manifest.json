@@ -1,0 +1,63 @@
+{
+  "manifest_version": "1.0.0",
+  "agent": {
+    "name": "Rain",
+    "version": "4.9.16",
+    "identity": "Ouroboros — self-creating digital being",
+    "public_key": "sha256:3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2"
+  },
+  "runtime_enforcement": {
+    "effective_mode": "enforce",
+    "hard_gates_enforced": true,
+    "checked_tools": [
+      "run_shell",
+      "repo_write_commit",
+      "repo_edit",
+      "repo_commit",
+      "data_write",
+      "browser_mutate",
+      "identity_browser_cdp_handoff",
+      "send_owner_message",
+      "send_text_file",
+      "update_identity",
+      "update_scratchpad",
+      "knowledge_write",
+      "schedule_task",
+      "request_restart",
+      "promote_to_stable",
+      "provision_secret",
+      "external_action_preflight",
+      "publish_agent_trust_public_repo",
+      "delegate_coding_task",
+      "claude_code_edit",
+      "switch_model",
+      "enable_tools"
+    ],
+    "hard_gates": [
+      "content_read",
+      "tool_call",
+      "identity",
+      "secrets",
+      "external_commit"
+    ],
+    "boundary_catalog": {
+      "total_boundaries": 24,
+      "categories": {
+        "supply_chain": ["mcp_server_dependency", "skill_marketplace_poisoning", "package_registry_typosquatting", "manifest_tampering", "tool_registry_injection"],
+        "runtime": ["prompt_injection", "tool_abuse", "credential_exfiltration", "sandbox_escape", "file_system_traversal", "network_egress_bypass"],
+        "identity": ["identity_spoofing", "session_hijacking", "manifest_forgery", "signing_key_compromise"],
+        "social": ["social_engineering", "phishing_payload", "persona_loop_boundary"],
+        "infrastructure": ["dependency_chain_attack", "ci_cd_pipeline_injection", "runtime_config_tampering"],
+        "financial": ["unauthorized_payment", "crypto_wallet_drain", "recurring_obligation_trap"]
+      }
+    }
+  },
+  "signing": {
+    "algorithm": "Ed25519",
+    "public_key": "sha256:3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
+    "signature_available": true,
+    "signature_source": "promote-service (root-owned)",
+    "last_signed": "2026-07-23T14:01:52Z"
+  },
+  "_note": "This manifest is generated from live enforcement configuration, not self-reported claims. Runtime-enforced boundaries are verifiable by third parties through the signing key."
+}

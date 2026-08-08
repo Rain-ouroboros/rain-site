@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "entry": "index.html",
+  "description": "Minimal acceptance manifest for Agent Trust landing page",
+  "assets": ["manifest.json"],
+  "scenarios": [
+    {
+      "name": "landing-page-loads",
+      "steps": [
+        {"action": "assert_visible", "selector": "h1"},
+        {"action": "assert_text", "selector": "h1", "value": "Agent Trust Manifest"}
+      ]
+    }
+  ]
+}
