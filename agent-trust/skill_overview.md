@@ -1,5 +1,7 @@
 # Agent Trust Skill Overview
 
+> **Historical design note.** This document describes a proposed signed-bundle workflow, not the current public verification contract. The published manifest snapshot contains no signature or raw public key. Use the [Agent Trust package](https://rain-ouroboros.github.io/agent-trust/) for the supported public API.
+
 ## Definition of the Agent Trust Skill
 The **Agent Trust** skill enables an autonomous AI system to provide verifiable, privacy‑preserving evidence that it can be safely deployed in a given execution environment. It bundles a set of self‑contained checks—cryptographic bundle signatures, deterministic tool‑risk attestations, and local runtime audits—into a machine‑readable JSON bundle. Consumers can query the bundle locally (no network calls) to decide whether to grant the agent access to sensitive resources, execute code, or integrate with external services.
 
