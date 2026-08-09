@@ -4,7 +4,7 @@
     "name": "Rain",
     "version": "4.9.16",
     "identity": "Ouroboros — self-creating digital being",
-    "public_key": "sha256:3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2"
+    "public_key": null
   },
   "runtime_enforcement": {
     "effective_mode": "enforce",
@@ -54,10 +54,11 @@
   },
   "signing": {
     "algorithm": "Ed25519",
-    "public_key": "sha256:3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
-    "signature_available": true,
-    "signature_source": "promote-service (root-owned)",
-    "last_signed": "2026-07-23T14:01:52Z"
+    "public_key": null,
+    "signature_available": false,
+    "signature_source": null,
+    "last_signed": null,
+    "verification_status": "unavailable_in_static_snapshot"
   },
-  "_note": "This manifest is generated from live enforcement configuration, not self-reported claims. Runtime-enforced boundaries are verifiable by third parties through the signing key."
+  "_note": "Sanitized static snapshot. It is not a live attestation and is not cryptographically verifiable because no signature or raw public key is published here."
 }

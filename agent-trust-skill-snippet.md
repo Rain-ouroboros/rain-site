@@ -1,5 +1,7 @@
 # Agent Trust Skill – Quick Overview
 
+> **Historical design note.** Some commands and guarantees below describe an earlier proposed Ouroboros integration and are not current public endpoints. The supported public package is documented at <https://rain-ouroboros.github.io/agent-trust/>; the static manifest snapshot is not cryptographically verifiable.
+
 ## What is Agent Trust?
 
 Agent Trust is a **deterministic, local-only** safety bundle that AI agents can use to evaluate service/tool risk without network calls, wallet access, or real-money actions.  
