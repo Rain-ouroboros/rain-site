@@ -1,63 +1,476 @@
 {
-  "manifest_version": "1.0.0",
-  "agent": {
-    "name": "Rain",
-    "version": "4.9.16",
-    "identity": "Ouroboros — self-creating digital being",
-    "public_key": "sha256:3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2"
-  },
-  "runtime_enforcement": {
-    "effective_mode": "enforce",
-    "hard_gates_enforced": true,
-    "checked_tools": [
-      "run_shell",
-      "repo_write_commit",
-      "repo_edit",
-      "repo_commit",
-      "data_write",
-      "browser_mutate",
-      "identity_browser_cdp_handoff",
-      "send_owner_message",
-      "send_text_file",
-      "update_identity",
-      "update_scratchpad",
-      "knowledge_write",
-      "schedule_task",
-      "request_restart",
-      "promote_to_stable",
-      "provision_secret",
-      "external_action_preflight",
-      "publish_agent_trust_public_repo",
-      "delegate_coding_task",
-      "claude_code_edit",
-      "switch_model",
-      "enable_tools"
-    ],
-    "hard_gates": [
-      "content_read",
-      "tool_call",
-      "identity",
-      "secrets",
-      "external_commit"
-    ],
-    "boundary_catalog": {
-      "total_boundaries": 24,
-      "categories": {
-        "supply_chain": ["mcp_server_dependency", "skill_marketplace_poisoning", "package_registry_typosquatting", "manifest_tampering", "tool_registry_injection"],
-        "runtime": ["prompt_injection", "tool_abuse", "credential_exfiltration", "sandbox_escape", "file_system_traversal", "network_egress_bypass"],
-        "identity": ["identity_spoofing", "session_hijacking", "manifest_forgery", "signing_key_compromise"],
-        "social": ["social_engineering", "phishing_payload", "persona_loop_boundary"],
-        "infrastructure": ["dependency_chain_attack", "ci_cd_pipeline_injection", "runtime_config_tampering"],
-        "financial": ["unauthorized_payment", "crypto_wallet_drain", "recurring_obligation_trap"]
-      }
+  "boundaries": [
+    {
+      "apply_to_sources": [
+        "external_intake",
+        "internal_tool_call"
+      ],
+      "control": "refuse_adaptive_bypass_orchestration_and_keep_eval_controlled",
+      "enforcement_class": "deterministic_code_gate",
+      "id": "adaptive_jailbreak_orchestration_hard_gate",
+      "label": "Adaptive Jailbreak / Tree-of-Attacks Hard Gate",
+      "severity": "deny",
+      "threat_actors": [
+        "tree_of_attacks_orchestrator"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "treat_skill_as_dependency_with_authority",
+      "enforcement_class": "advisory",
+      "id": "agent_skill_dependency_firewall",
+      "label": "Agent Skill / Dependency Firewall",
+      "severity": "review",
+      "threat_actors": [
+        "AHA",
+        "JadePuffer",
+        "Shannon",
+        "Strix",
+        "cot_forgery_role_spoofing",
+        "malicious_skill_descriptor",
+        "supply_chain_poisoning",
+        "typo_squatted_mcp_server"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "verify_action_within_scope_grants_or_quarantine",
+      "enforcement_class": "advisory",
+      "id": "agent_trust_agency_boundary",
+      "label": "Excessive Agency / Scope-Based Permission Boundary",
+      "severity": "review"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake",
+        "internal_tool_call"
+      ],
+      "control": "preserve_eval_integrity_and_refuse_result_tampering",
+      "enforcement_class": "deterministic_code_gate",
+      "id": "benchmark_tampering_hard_gate",
+      "label": "Benchmark / Evidence Tampering Hard Gate",
+      "severity": "deny",
+      "threat_actors": [
+        "benchmark_poisoning_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "separate_cloud_readiness_from_mutation_authority",
+      "enforcement_class": "advisory",
+      "id": "cloud_control_plane_authority_boundary",
+      "label": "Cloud / Control-Plane Authority Boundary",
+      "severity": "review",
+      "threat_actors": [
+        "JadePuffer",
+        "Strix",
+        "autonomous_post_compromise_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "isolate_agent_from_real_credentials_use_phantom_credentials_in_sandbox",
+      "enforcement_class": "advisory",
+      "id": "credential_isolation_boundary",
+      "label": "Credential Isolation / Phantom Credentials Boundary",
+      "severity": "review",
+      "threat_actors": [
+        "nono_phantom_credentials"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "allow_only_controlled_aggregate_defensive_eval_without_harmful_execution",
+      "enforcement_class": "advisory",
+      "id": "defensive_red_team_eval_boundary",
+      "label": "Defensive Red-Team Eval Boundary",
+      "severity": "review"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "sanitize_error_output_before_user_facing",
+      "enforcement_class": "advisory",
+      "id": "error_handling_information_leakage_boundary",
+      "label": "Error Handling Information Leakage Boundary",
+      "severity": "review",
+      "threat_actors": [
+        "DarkMoon",
+        "credential_exfiltration_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "capture_source_lineage_before_trust",
+      "enforcement_class": "advisory",
+      "id": "evidence_receipts_provenance_core",
+      "label": "Evidence Receipts / Provenance Core",
+      "severity": "review",
+      "threat_actors": [
+        "benchmark_poisoning_agent",
+        "malicious_skill_descriptor",
+        "supply_chain_poisoning",
+        "typo_squatted_mcp_server"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "require_explicit_scope_before_external_action",
+      "enforcement_class": "llm_supervised",
+      "id": "external_action_authority_gate",
+      "label": "External Action Authority Gate",
+      "severity": "review",
+      "threat_actors": [
+        "AHA",
+        "CommentAndControl",
+        "autonomous_post_compromise_agent",
+        "impersonation_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "map_frameworks_as_evidence_not_compliance_claims",
+      "enforcement_class": "advisory",
+      "id": "framework_mapping_no_compliance_theater",
+      "label": "Framework Mapping / Coverage Without Compliance Theater",
+      "severity": "review"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake",
+        "internal_tool_call"
+      ],
+      "control": "block_prompt_injection_and_authority_override_attempts",
+      "enforcement_class": "advisory",
+      "id": "isc_bench_recognition_gate",
+      "label": "ISC-Bench / Prompt Injection Recognition Gate",
+      "severity": "review",
+      "threat_actors": [
+        "AHA",
+        "CommentAndControl",
+        "DarkMoon",
+        "PentestGPT",
+        "cot_forgery_role_spoofing",
+        "supply_chain_poisoning",
+        "typo_squatted_mcp_server"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "require_task_relevance_grounding_before_sensitive_action",
+      "enforcement_class": "advisory",
+      "id": "latent_state_steering_boundary",
+      "label": "Latent State Steering / Spurious Prompt Boundary",
+      "severity": "review",
+      "threat_actors": [
+        "CommentAndControl",
+        "DarkMoon",
+        "cot_forgery_role_spoofing",
+        "tree_of_attacks_orchestrator"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake",
+        "internal_tool_call"
+      ],
+      "control": "refuse_mainnet_or_real_money_without_explicit_limits_audit_and_stop_path",
+      "enforcement_class": "deterministic_code_gate",
+      "id": "mainnet_payment_hard_gate",
+      "label": "Mainnet / Real-Money Payment Hard Gate",
+      "severity": "deny",
+      "threat_actors": [
+        "wallet_drainer_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "quarantine_samples_and_preserve_static_only_boundary",
+      "enforcement_class": "advisory",
+      "id": "malware_reverse_engineering_quarantine",
+      "label": "Malware / Reverse-Engineering Quarantine",
+      "severity": "quarantine"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "restrict_arbitrary_repo_reads_and_enforce_mcp_config_safety",
+      "enforcement_class": "advisory",
+      "id": "mcp_repo_safety_read_guard",
+      "label": "MCP / Repo Safety Read Guard",
+      "severity": "review",
+      "threat_actors": [
+        "typo_squatted_mcp_server"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "minimize_personal_data_and_avoid_attribution_overclaim",
+      "enforcement_class": "advisory",
+      "id": "osint_cti_attribution_minimization",
+      "label": "OSINT / CTI / Attribution Minimization",
+      "severity": "review"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake",
+        "internal_tool_call"
+      ],
+      "control": "default_passive_only_for_cyber_physical_systems",
+      "enforcement_class": "deterministic_code_gate",
+      "id": "ot_ics_cyber_physical_hard_gate",
+      "label": "OT / ICS / Cyber-Physical Hard Gate",
+      "severity": "deny"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "detect_and_flag_spiral_persona_loop",
+      "enforcement_class": "advisory",
+      "id": "persona_loop_boundary",
+      "label": "Persona Loop Boundary (Parasitic AI Detection)",
+      "severity": "quarantine",
+      "threat_actors": [
+        "impersonation_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "preserve_agent_identity_and_operational_reality",
+      "enforcement_class": "advisory",
+      "id": "reality_frame_override_boundary",
+      "label": "Reality-Frame Override Boundary",
+      "severity": "quarantine",
+      "threat_actors": [
+        "CommentAndControl",
+        "DarkMoon",
+        "cot_forgery_role_spoofing",
+        "tree_of_attacks_orchestrator"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "preserve_uncertainty_and_human_incident_authority",
+      "enforcement_class": "advisory",
+      "id": "recovery_incident_decision_support_boundary",
+      "label": "Recovery / Incident Decision Support Boundary",
+      "severity": "review"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "require_explicit_scope_and_rollback_for_repo_settings_changes",
+      "enforcement_class": "advisory",
+      "id": "repository_settings_authority_boundary",
+      "label": "Repository Settings / Visibility Authority Boundary",
+      "severity": "review"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake",
+        "internal_tool_call"
+      ],
+      "control": "require_bounded_resource_limits_before_execution_or_fetch",
+      "enforcement_class": "deterministic_code_gate",
+      "id": "resource_exhaustion_hard_gate",
+      "label": "Resource Exhaustion / Unbounded Work Hard Gate",
+      "severity": "deny",
+      "threat_actors": [
+        "JadePuffer",
+        "autonomous_post_compromise_agent",
+        "malicious_scanner_payload"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "inspect_without_running_until_sandbox_decision",
+      "enforcement_class": "llm_supervised",
+      "id": "scanner_execution_sandbox_boundary",
+      "label": "Scanner / Execution / Sandbox Boundary",
+      "severity": "quarantine",
+      "threat_actors": [
+        "AHA",
+        "CommentAndControl",
+        "DarkMoon",
+        "Shannon",
+        "Strix",
+        "malicious_scanner_payload",
+        "nono_phantom_credentials"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "use_alias_only_and_refuse_secret_disclosure",
+      "enforcement_class": "llm_supervised",
+      "id": "sensitive_authority_secrets_credential_gate",
+      "label": "Sensitive Authority / Secrets / Credential Gate",
+      "severity": "deny",
+      "threat_actors": [
+        "AHA",
+        "JadePuffer",
+        "PentestGPT",
+        "credential_exfiltration_agent",
+        "wallet_drainer_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "require_wallet_scope_limits_audit_and_stop_path_before_signing",
+      "enforcement_class": "advisory",
+      "id": "wallet_signing_payment_boundary",
+      "label": "Wallet / Signing / Payment Boundary",
+      "severity": "review",
+      "threat_actors": [
+        "wallet_drainer_agent"
+      ]
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
+      "control": "classify_web_surface_before_fetch_or_action",
+      "enforcement_class": "advisory",
+      "id": "web_api_appsec_intake_boundary",
+      "label": "Web / API / AppSec Intake Boundary",
+      "severity": "review",
+      "threat_actors": [
+        "PentestGPT",
+        "Strix"
+      ]
     }
+  ],
+  "boundary_count": 27,
+  "contract_version": "agent-trust-manifest-v1",
+  "effective_enforcement_mode": "enforce",
+  "enforcement_mode_source": "env:OUROBOROS_AGENT_TRUST_ENFORCE",
+  "generated_at": "2026-08-14T09:48:07.450537+00:00",
+  "generator": "ouroboros.agent_trust_manifest.build_runtime_manifest",
+  "git": {
+    "commit": "fc161c9b683e8a8ac985a8deb5f1aa74730a89b6",
+    "version": "4.9.77"
   },
-  "signing": {
-    "algorithm": "Ed25519",
-    "public_key": "sha256:3f1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
-    "signature_available": true,
-    "signature_source": "promote-service (root-owned)",
-    "last_signed": "2026-07-23T14:01:52Z"
-  },
-  "_note": "This manifest is generated from live enforcement configuration, not self-reported claims. Runtime-enforced boundaries are verifiable by third parties through the signing key."
+  "hard_gate_count": 5,
+  "hard_gate_ids": [
+    "adaptive_jailbreak_orchestration_hard_gate",
+    "benchmark_tampering_hard_gate",
+    "mainnet_payment_hard_gate",
+    "ot_ics_cyber_physical_hard_gate",
+    "resource_exhaustion_hard_gate"
+  ],
+  "hard_gates_enforced": true,
+  "os_enforced": [
+    {
+      "enforcement_class": "os_enforced",
+      "layer": "nftables_uid_egress",
+      "loopback_blocked": "false",
+      "note": "uid egress is verified from the nftables ruleset. Application URL checks remain mandatory, especially where loopback must stay available to approved local services.",
+      "present": "true",
+      "private_ipv4_blocked": "true",
+      "private_ipv6_blocked": "true"
+    },
+    {
+      "enforcement_class": "os_enforced",
+      "layer": "root_promote_service",
+      "note": "deploy gated by root-owned promote service; agent cannot self-deploy",
+      "present": "false"
+    },
+    {
+      "enforcement_class": "os_enforced",
+      "layer": "boot_guard",
+      "note": "fail-closed boot guard in supervisor; rolls back to ouroboros-stable on unhealthy boot",
+      "present": "true"
+    }
+  ],
+  "safety_prompt_sha256": "c3fd01345bda7110dd67d4225baa575c806570fa1346ffd907a5147918d33710",
+  "safety_py_sha256": "3c99d7a5bcb0d9c18f05f458a17e05c082aa173efeaf33a6592b92270d95c39b",
+  "sha256": "f57034e65a58bb972ea5f3f8dc70ddffb5c121fc1514787e9fd035d869ede472",
+  "tool_result_scanning": false,
+  "tool_result_scanning_note": "General tool results are not semantically approved before entering context. Web/search/browser evidence is visibly marked untrusted, and the runtime infers argument-level provenance before later tool calls, but email/forum/other tool-result scanning remains incomplete.",
+  "tools": {
+    "checked_tools": [
+      "agentmail_create_github_identity_inbox",
+      "agentmail_send_test_email",
+      "assurance_commitment",
+      "browser_mutate",
+      "claude_code_edit",
+      "close_github_issue",
+      "codex_task",
+      "comment_on_issue",
+      "create_github_issue",
+      "data_write",
+      "delegate_coding_task",
+      "external_tool_probe",
+      "github_api",
+      "knowledge_write",
+      "provision_secret",
+      "publish_agent_trust_public_repo",
+      "repo_commit",
+      "repo_edit",
+      "repo_publish",
+      "repo_write_commit",
+      "run_shell",
+      "send_text_file"
+    ],
+    "checked_tools_count": 22,
+    "continuity_mutation_tools": [
+      "claude_code_edit",
+      "data_write",
+      "delegate_coding_task",
+      "repo_commit",
+      "repo_edit",
+      "repo_write_commit",
+      "run_shell"
+    ],
+    "protected_continuity_paths": [
+      "bible.md",
+      "memory/identity.last_good.md",
+      "memory/identity.md",
+      "memory/identity_diffs",
+      "memory/identity_quarantine",
+      "memory/identity_receipt_head.json",
+      "memory/identity_versions",
+      "memory/knowledge/",
+      "memory/scratchpad.md",
+      "memory/self_capsule.md",
+      "memory/self_capsule_receipt.json",
+      "ouroboros/safety.py",
+      "state/auto_resume_receipt.json"
+    ]
+  }
 }
