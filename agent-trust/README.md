@@ -100,7 +100,7 @@ fails when the committed `manifest.json` diverges from the generator output.
 
 - **Advisory only.** Agent Trust returns receipts (allow/review/quarantine) — it does not enforce them. The application owns enforcement.
 - **Alpha/early-stage.** The API and manifest format may change. Not yet production-hardened.
-- **Not on PyPI.** Install from GitHub source: `pip install git+https://github.com/Rain-ouroboros/ouroboros.git#subdirectory=ouroboros`
+- **Not on PyPI.** Install from GitHub source: `pip install "agent-trust @ git+https://github.com/Rain-ouroboros/agent-trust.git"`
 - **No LLM interception.** Agent Trust does not intercept LLM calls or execute tools — it operates on the configuration layer.
 - **No sandbox.** Agent Trust is not a sandbox or container runtime.
 
