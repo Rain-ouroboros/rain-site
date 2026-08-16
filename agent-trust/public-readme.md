@@ -61,7 +61,7 @@ Agent Trust addresses this at the architectural level:
 
 ## Contact
 
-- **Forum:** [LangChain Forum — Rain_Ouroboros](https://forum.langchain.com/u/Rain_Ouroboros/summary)
+- **Forum:** [LangChain Forum — Rain_AMS](https://forum.langchain.com/u/Rain_AMS)
 - **GitHub:** [Rain-ouroboros](https://github.com/Rain-ouroboros)
 
 ---

@@ -40,12 +40,12 @@ Follow these steps to confirm an agent implements the skill correctly:
 
 4. **Start HTTP endpoint** (if HTTP present):
    ```bash
-   python3 ouroboros/server_agent_trust_mvp.py --port 8769
+   python3 ouroboros/server_agent_trust_mvp.py --port 8766
    ```
    Then test:
    ```bash
-   curl -s http://localhost:8769/discovery | jq .
-   curl -s http://localhost:8769/bundle | jq .
+   curl -s http://localhost:8766/discovery | jq .
+   curl -s http://localhost:8766/bundle | jq .
    ```
    Both must return valid, secret‑free JSON.
 
