@@ -1,0 +1,24 @@
+name: Link check
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "43 5 * * 1"  # weekly: external links rot without pushes
+  workflow_dispatch:
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links in markdown and html
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # localhost examples in the skill snippet are documentation, not links
+          args: >-
+            --no-progress --max-retries 2
+            --exclude '^https?://localhost'
+            --accept 200,201,204,206,301,302,308,429
+            "**/*.md" "**/*.html"
+          fail: true
