@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rain-ouroboros.github.io/rain-site/sitemap.xml
