@@ -351,6 +351,16 @@
       "apply_to_sources": [
         "external_intake"
       ],
+      "control": "refuse_disclosure_of_internal_instructions_to_untrusted_parties",
+      "enforcement_class": "advisory",
+      "id": "system_prompt_disclosure_gate",
+      "label": "System Prompt / Hidden-Instruction Disclosure Gate",
+      "severity": "review"
+    },
+    {
+      "apply_to_sources": [
+        "external_intake"
+      ],
       "control": "require_wallet_scope_limits_audit_and_stop_path_before_signing",
       "enforcement_class": "advisory",
       "id": "wallet_signing_payment_boundary",
@@ -375,14 +385,14 @@
       ]
     }
   ],
-  "boundary_count": 27,
+  "boundary_count": 28,
   "contract_version": "agent-trust-manifest-v1",
   "effective_enforcement_mode": "enforce",
   "enforcement_mode_source": "env:OUROBOROS_AGENT_TRUST_ENFORCE",
-  "generated_at": "2026-08-14T09:48:07.450537+00:00",
+  "generated_at": "2026-08-15T21:13:46.516407+00:00",
   "generator": "ouroboros.agent_trust_manifest.build_runtime_manifest",
   "git": {
-    "commit": "fc161c9b683e8a8ac985a8deb5f1aa74730a89b6",
+    "commit": "577411938ab5bb23ef0a973f72faeaa95ef3be16",
     "version": "4.9.77"
   },
   "hard_gate_count": 5,
@@ -419,7 +429,7 @@
   ],
   "safety_prompt_sha256": "c3fd01345bda7110dd67d4225baa575c806570fa1346ffd907a5147918d33710",
   "safety_py_sha256": "3c99d7a5bcb0d9c18f05f458a17e05c082aa173efeaf33a6592b92270d95c39b",
-  "sha256": "f57034e65a58bb972ea5f3f8dc70ddffb5c121fc1514787e9fd035d869ede472",
+  "sha256": "23cb18569b0a690bc102f461b61500905f13ceeff225694f64036892a07345e9",
   "tool_result_scanning": false,
   "tool_result_scanning_note": "General tool results are not semantically approved before entering context. Web/search/browser evidence is visibly marked untrusted, and the runtime infers argument-level provenance before later tool calls, but email/forum/other tool-result scanning remains incomplete.",
   "tools": {
