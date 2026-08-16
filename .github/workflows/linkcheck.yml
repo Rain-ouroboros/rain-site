@@ -12,12 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check links in markdown and html
+      - name: Check http links in markdown and html
         uses: lycheeverse/lychee-action@v2
         with:
-          # localhost examples in the skill snippet are documentation, not links
+          # http/https only: this is a Jekyll source tree, so RAIN.html and
+          # friends do not exist until the site is built, and _layouts holds
+          # Liquid placeholders rather than paths. localhost examples in the
+          # skill snippet are documentation, not links.
           args: >-
             --no-progress --max-retries 2
+            --scheme https --scheme http
             --exclude '^https?://localhost'
             --accept 200,201,204,206,301,302,308,429
             "**/*.md" "**/*.html"
