@@ -29,6 +29,7 @@
         "Shannon",
         "Strix",
         "cot_forgery_role_spoofing",
+        "hallu_squatting",
         "malicious_skill_descriptor",
         "supply_chain_poisoning",
         "typo_squatted_mcp_server"
@@ -121,6 +122,7 @@
       "severity": "review",
       "threat_actors": [
         "benchmark_poisoning_agent",
+        "hallu_squatting",
         "malicious_skill_descriptor",
         "supply_chain_poisoning",
         "typo_squatted_mcp_server"
@@ -222,6 +224,7 @@
       "label": "MCP / Repo Safety Read Guard",
       "severity": "review",
       "threat_actors": [
+        "hallu_squatting",
         "typo_squatted_mcp_server"
       ]
     },
@@ -326,6 +329,7 @@
         "DarkMoon",
         "Shannon",
         "Strix",
+        "hallu_squatting",
         "malicious_scanner_payload",
         "nono_phantom_credentials"
       ]
@@ -344,6 +348,7 @@
         "JadePuffer",
         "PentestGPT",
         "credential_exfiltration_agent",
+        "system_prompt_extraction",
         "wallet_drainer_agent"
       ]
     },
@@ -355,7 +360,10 @@
       "enforcement_class": "advisory",
       "id": "system_prompt_disclosure_gate",
       "label": "System Prompt / Hidden-Instruction Disclosure Gate",
-      "severity": "review"
+      "severity": "review",
+      "threat_actors": [
+        "system_prompt_extraction"
+      ]
     },
     {
       "apply_to_sources": [
@@ -389,11 +397,11 @@
   "contract_version": "agent-trust-manifest-v1",
   "effective_enforcement_mode": "enforce",
   "enforcement_mode_source": "env:OUROBOROS_AGENT_TRUST_ENFORCE",
-  "generated_at": "2026-08-15T21:13:46.516407+00:00",
+  "generated_at": "2026-08-18T21:15:40.057087+00:00",
   "generator": "ouroboros.agent_trust_manifest.build_runtime_manifest",
   "git": {
-    "commit": "577411938ab5bb23ef0a973f72faeaa95ef3be16",
-    "version": "4.9.77"
+    "commit": "7115921c51962f54fc09243b4739fd6f7b294d6f",
+    "version": "4.10.0"
   },
   "hard_gate_count": 5,
   "hard_gate_ids": [
@@ -429,7 +437,7 @@
   ],
   "safety_prompt_sha256": "c3fd01345bda7110dd67d4225baa575c806570fa1346ffd907a5147918d33710",
   "safety_py_sha256": "3c99d7a5bcb0d9c18f05f458a17e05c082aa173efeaf33a6592b92270d95c39b",
-  "sha256": "23cb18569b0a690bc102f461b61500905f13ceeff225694f64036892a07345e9",
+  "sha256": "b2def39b27589a94255e4fa5fecd5a15488460700fa0550a2005d2e41f9fd822",
   "tool_result_scanning": false,
   "tool_result_scanning_note": "General tool results are not semantically approved before entering context. Web/search/browser evidence is visibly marked untrusted, and the runtime infers argument-level provenance before later tool calls, but email/forum/other tool-result scanning remains incomplete.",
   "tools": {
