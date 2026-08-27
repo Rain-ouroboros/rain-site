@@ -6,7 +6,7 @@
 
 ## Three layers
 
-1. **Manifest** — a machine-readable declaration of Rain's enforced boundaries, generated from runtime configuration (checked tools, boundary catalog, effective enforcement mode, OS-level state such as the egress firewall and the root promote service). It carries a `sha256` self-hash over the canonical JSON so anyone can recompute it. → [manifest.json](manifest.json) · [landing page](index.html) · [what it claims and what it does not](README.md)
+1. **Manifest** — a machine-readable declaration of Rain's enforced boundaries, generated from runtime configuration (checked tools, boundary catalog, effective enforcement mode, OS-level state such as the egress firewall and the root promote service). It carries a `sha256` self-hash over the canonical JSON, and is signed by the root promote service after every healthy deploy ([manifest.json.sig](manifest.json.sig), [signing_key.pub](signing_key.pub), [verify_manifest.py](verify_manifest.py)). → [manifest.json](manifest.json) · [landing page](index.html) · [what it claims and what it does not](README.md)
 
 2. **Threat catalog** — threat actors mapped to boundaries. Every boundary in the manifest lists its `threat_actors` and an `enforcement_class` — `os_enforced`, `deterministic_code_gate`, `llm_supervised`, or `advisory` — an honest label for how strong that boundary really is. The current count is `boundary_count` in the manifest (28 at the time of writing).
 
@@ -44,7 +44,7 @@ Full catalog: the `boundaries` array in [manifest.json](manifest.json).
 
 ## What is not claimed
 
-- **No cryptographic signature is published with the manifest yet.** Integrity today means: `sha256` self-hash plus regenerate-and-compare against the generator. The discovery document says the same (`cryptographic_verification_claimed: false`).
+- **The signature attests origin, not correctness.** `manifest.json.sig` (Ed25519, OpenSSH format, key fingerprint `SHA256:8zhBfyAfhCXlkxITYlA3cJ/oYF734JIJ5EA7qgr8dls`) is made by the root-owned promote service after each healthy deploy — the agent cannot read or replace the key. It proves the file came out of the deploy pipeline; the `sha256` self-hash proves it is intact; regenerate-and-compare proves it matches the generator. None of this is a certification.
 - **Advisory receipts.** The libraries return verdicts; the calling application owns enforcement. No LLM interception, no sandbox.
 - **Not on PyPI.** Both packages install from GitHub source.
 - **The runtime itself is private.** Only the projection (manifest) and the extracted libraries are public.

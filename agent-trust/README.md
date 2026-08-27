@@ -25,10 +25,22 @@ This architecture follows Pawel Twardziak's advice (LangChain Forum, July 2026):
 The live manifest is available at:
 
 - **API endpoint:** `GET /api/agent-trust/manifest` (on the running Ouroboros server)
-- **Static copy:** `docs/agent-trust/manifest.json` (in this repository)
+- **Static copy:** `docs/agent-trust/manifest.json` (in this repository), with `manifest.json.sig` and `signing_key.pub` next to it
 - **Landing page:** `docs/agent-trust/index.html` — interactive viewer that fetches and displays the manifest
 
 ## How to verify the manifest
+
+### Option 0: Signature (authenticity)
+
+`manifest.json.sig` is an OpenSSH Ed25519 signature over the exact bytes of `manifest.json`, produced by the **root-owned promote service** after every healthy deploy. The agent runs unprivileged and can neither read nor replace the key, so a valid signature means the file came out of Rain's deploy pipeline — not out of the agent's own hands.
+
+```bash
+B=https://rain-ouroboros.github.io/rain-site/agent-trust
+curl -sSO $B/manifest.json -O $B/manifest.json.sig -O $B/signing_key.pub -O $B/verify_manifest.py
+python3 verify_manifest.py          # VERIFIED / REJECTED (wraps `ssh-keygen -Y verify`)
+```
+
+Key fingerprint to pin: `SHA256:8zhBfyAfhCXlkxITYlA3cJ/oYF734JIJ5EA7qgr8dls`. The publisher refuses to ship a `.sig` that does not verify against the manifest next to it (`signature_mismatch` in the publish log).
 
 ### Option 1: Drift test (canonical)
 
@@ -92,7 +104,7 @@ fails when the committed `manifest.json` diverges from the generator output.
 
 1. **Generated from enforced config, not self-description.** The manifest is built from live enforcement objects (CHECKED_TOOLS, _BOUNDARIES, effective env mode) — it cannot drift from reality because it IS a projection of reality.
 
-2. **Self-hash for third-party regeneration.** The manifest carries a `sha256` self-hash over the canonical (sorted-key) JSON, so any third party can regenerate the manifest from the same source and detect drift deterministically.
+2. **Signed by the deploy pipeline, not by the agent.** The Ed25519 key is root-only on the deploy host; the promote service signs the manifest only after the release passed the test gate and came up healthy. **Self-hash for third-party regeneration.** The manifest carries a `sha256` self-hash over the canonical (sorted-key) JSON, so any third party can regenerate the manifest from the same source and detect drift deterministically.
 
 3. **Advisory receipts, application-owned enforcement.** The manifest returns allow/review/quarantine decisions, but the application — not Agent Trust — owns enforcement. This is by design: Agent Trust provides verifiable evidence of boundary checks without attempting to be a runtime enforcement layer (which would require intercepting LLM calls and tool execution — out of scope for this library).
 
@@ -108,7 +120,7 @@ fails when the committed `manifest.json` diverges from the generator output.
 
 If you are building agent-to-agent trust and want to verify an Ouroboros agent's manifest:
 
-1. Request the manifest from `/api/agent-trust/manifest`
+1. Fetch the published snapshot, `manifest.json.sig` and `signing_key.pub`; verify the signature (Option 0). Pin the key fingerprint.
 2. Regenerate it from live enforcement configuration and compare (the `sha256` self-hash and the drift test make this deterministic)
 3. Check `effective_enforcement_mode` — if it's not `"enforce"`, the boundaries are advisory only
 4. Review `boundaries`, `tools`, `os_enforced`, and `hard_gate_ids` to understand what is actually blocked

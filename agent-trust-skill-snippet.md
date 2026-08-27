@@ -33,12 +33,12 @@ It is published as small, runnable pieces:
 3. **High-risk descriptor:** `agent-trust-skill check --action install_skill --source github --url https://example.com/pr-review-helper --requested-permission repo_read,read_env,network --warrant "summarize current PR only" --boundary "no secrets" --compact` → `"decision": "deny_or_require_review"`.
 4. **Benchmark:** `agent-trust-bench run scenarios/basic.yaml` → exit `0`.
 5. **Offensive matrix:** `python -m harness.runner` in `agent-trust-offensive` → 6/8 blocked (the two bypasses are documented in its README).
-6. **Manifest self-hash:** recompute `sha256(json.dumps(manifest_without_sha256, sort_keys=True))` and compare with the `sha256` field; check `effective_enforcement_mode` and `hard_gate_ids`.
+6. **Manifest self-hash + signature:** recompute `sha256(json.dumps(manifest_without_sha256, sort_keys=True))` and compare with the `sha256` field; then `ssh-keygen -Y verify` `manifest.json.sig` against `signing_key.pub` (identity `ouroboros-promote`, namespace `file`); check `effective_enforcement_mode` and `hard_gate_ids`.
 7. **Offline re-run:** repeat 1–5 with networking disabled; results must be identical.
 
 ## What is not claimed
 
-- No cryptographic signature is published with the manifest yet; integrity is the `sha256` self-hash plus regenerate-and-compare.
+- The manifest signature (`manifest.json.sig`, Ed25519 by the root promote service) attests origin only — it is not a certification; integrity is the `sha256` self-hash plus regenerate-and-compare.
 - Receipts are advisory (`enforced=False`); the calling application owns enforcement.
 - No compliance certification, no hosted security product, no mainnet or real-money path.
 

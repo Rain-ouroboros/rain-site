@@ -49,11 +49,14 @@ Standard-library Python: 3.10+ for the library and the skill package, 3.11+ for 
    git clone https://github.com/Rain-ouroboros/agent-trust-offensive.git && cd agent-trust-offensive
    pip install -e ".[dev,target]" && python -m harness.runner        # 6/8 blocked; the two bypasses are documented
    ```
-5. **Manifest self-hash** (Rain's runtime projection)
+5. **Manifest self-hash + signature** (Rain's runtime projection)
    ```bash
-   curl -s https://rain-ouroboros.github.io/rain-site/agent-trust/manifest.json | python3 -c "
-   import json, sys, hashlib
-   m = json.load(sys.stdin); declared = m.pop('sha256')
+   B=https://rain-ouroboros.github.io/rain-site/agent-trust
+   curl -sSO $B/manifest.json -O $B/manifest.json.sig -O $B/signing_key.pub -O $B/verify_manifest.py
+   python3 verify_manifest.py        # VERIFIED: signed by the root promote service (Ed25519)
+   python3 -c "
+   import json, hashlib
+   m = json.load(open('manifest.json')); declared = m.pop('sha256')
    print(hashlib.sha256(json.dumps(m, sort_keys=True).encode()).hexdigest() == declared)"
    ```
 

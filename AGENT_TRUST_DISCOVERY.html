@@ -123,7 +123,7 @@ bash scripts/agent_trust_first_run.sh</code></pre>
   </ul>
 
   <h3>Path D: Runtime manifest</h3>
-  <p>Rain's own runtime publishes a <a href="https://rain-ouroboros.github.io/rain-site/agent-trust/">manifest</a> generated from live enforcement configuration. Recompute the self-hash from the snapshot:</p>
+  <p>Rain's own runtime publishes a <a href="https://rain-ouroboros.github.io/rain-site/agent-trust/">manifest</a> generated from live enforcement configuration, signed by the root promote service (<code>manifest.json.sig</code>, Ed25519; verify with <code>ssh-keygen -Y verify</code> or the <code>verify_manifest.py</code> published next to it). Recompute the self-hash from the snapshot:</p>
   <pre><code>curl -s https://rain-ouroboros.github.io/rain-site/agent-trust/manifest.json | python3 -c "
 import json, sys, hashlib
 m = json.load(sys.stdin); declared = m.pop('sha256')

@@ -67,7 +67,8 @@
   <p>This is an <strong>Agent Trust Manifest</strong> — a machine-readable declaration of what an AI agent <em>can</em> and <em>cannot</em> do, generated directly from its runtime enforcement configuration.</p>
   <p>Unlike a self-reported promise, this manifest is a <strong>projection of live enforcement</strong>: it is built by reading the enforcement objects the running agent actually uses, not by asking the agent to describe itself. A drift test fails when the published snapshot no longer matches what the generator produces.</p>
   <p>The manifest carries a <strong><code>sha256</code> self-hash</strong> over its own canonical JSON, so anyone can confirm that the published file is internally intact and byte-for-byte what was generated.</p>
-  <p class="note"><strong>What this is not.</strong> The manifest is <em>not</em> cryptographically signed, and the self-hash does not attest origin — it proves integrity, not authorship. There is no certification authority behind it, and the receipts it describes are advisory: the application, not Agent Trust, owns enforcement.</p>
+  <p>It is also <strong>signed</strong>: after every healthy promote, the root-owned promote service — a process the agent cannot modify — signs the published <code>manifest.json</code> with an Ed25519 key the agent never sees (<a href="manifest.json.sig">manifest.json.sig</a>, <a href="signing_key.pub">signing_key.pub</a>). The self-hash proves integrity; the signature proves the file left Rain's deploy pipeline, not the agent's hands.</p>
+  <p class="note"><strong>What this is not.</strong> There is no certification authority behind the key — it attests origin (Rain's promote service), not correctness. The receipts the manifest describes are advisory: the application, not Agent Trust, owns enforcement.</p>
 </div>
 
 <h2>Live Manifest</h2>
@@ -103,7 +104,16 @@ print("stored:", stored)
 print("calc:  ", calc)
 print("MATCH" if stored == calc else "MISMATCH")
 PY</code></pre>
-  <p class="note">A match proves the file is intact. It does <strong>not</strong> prove which system produced it — to establish that, regenerate the manifest from the same enforcement source and compare, which is exactly what the drift test does on every change.</p>
+  <p class="note">A match proves the file is intact. To establish which system produced it, check the signature below, or regenerate the manifest from the same enforcement source and compare — which is exactly what the drift test does on every change.</p>
+
+  <h3>Authenticity: verify the promote-service signature</h3>
+  <p><code>manifest.json.sig</code> is an OpenSSH signature (<code>ssh-keygen -Y sign</code>, namespace <code>file</code>) over the exact bytes of <code>manifest.json</code>, made by the root promote service. Verify with OpenSSH ≥ 8.2 — no other tooling needed:</p>
+  <pre><code>B=https://rain-ouroboros.github.io/rain-site/agent-trust
+curl -sSO $B/manifest.json -O $B/manifest.json.sig -O $B/signing_key.pub
+printf 'ouroboros-promote %s\n' "$(cat signing_key.pub)" &gt; allowed_signers
+ssh-keygen -Y verify -f allowed_signers -I ouroboros-promote -n file -s manifest.json.sig &lt; manifest.json
+# Good "file" signature for ouroboros-promote with ED25519 key SHA256:8zhBfyAfhCXlkxITYlA3cJ/oYF734JIJ5EA7qgr8dls</code></pre>
+  <p class="note">Or <code>curl -sSO $B/verify_manifest.py &amp;&amp; python3 verify_manifest.py</code>, which wraps the same command. Key fingerprint to pin: <code>SHA256:8zhBfyAfhCXlkxITYlA3cJ/oYF734JIJ5EA7qgr8dls</code>. The private key lives root-only on the deploy host; the agent runs as an unprivileged user and cannot read or replace it.</p>
   <button onclick="verifyInBrowser()" style="margin-top:1rem;padding:0.5rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:0.9rem;">Recompute in browser (Web Crypto)</button>
   <div id="verification-result"></div>
 </div>
@@ -201,7 +211,7 @@ function renderFormatted(m) {
   html += '<div class="card"><h3>Enforcement</h3>';
   html += '<p class="kv"><strong>Mode:</strong> <span class="badge ' + (m.effective_enforcement_mode === 'enforce' ? 'badge-green' : 'badge-orange') + '">' + esc(m.effective_enforcement_mode) + '</span> <span class="note">from ' + esc(m.enforcement_mode_source) + '</span></p>';
   html += '<p class="kv"><strong>Hard gates enforced:</strong> ' + (m.hard_gates_enforced ? '✅ yes' : '⚠️ no') + '</p>';
-  html += '<p class="kv"><strong>Integrity:</strong> <span class="badge badge-green">sha256 self-hash</span> <span class="note">not a signature — see the Verify tab</span></p>';
+  html += '<p class="kv"><strong>Integrity:</strong> <span class="badge badge-green">sha256 self-hash</span> <span class="badge badge-green">Ed25519 signature</span> <span class="note">by the root promote service — see the Verify tab</span></p>';
   html += '<p class="kv"><strong>safety.py:</strong> <code>' + esc((m.safety_py_sha256 || '').slice(0, 16)) + '…</code> · <strong>safety prompt:</strong> <code>' + esc((m.safety_prompt_sha256 || '').slice(0, 16)) + '…</code></p>';
   if (m.tool_result_scanning === false) {
     html += '<p class="note"><strong>Known gap:</strong> ' + esc(m.tool_result_scanning_note) + '</p>';
