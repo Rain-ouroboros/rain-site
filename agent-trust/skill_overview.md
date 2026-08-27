@@ -1,50 +1,69 @@
 # Agent Trust Skill Overview
 
-## Definition of the Agent Trust Skill
-The **Agent Trust** skill enables an autonomous AI system to provide verifiable, privacy‑preserving evidence that it can be safely deployed in a given execution environment. It bundles a set of self‑contained checks—cryptographic bundle signatures, deterministic tool‑risk attestations, and local runtime audits—into a machine‑readable JSON bundle. Consumers can query the bundle locally (no network calls) to decide whether to grant the agent access to sensitive resources, execute code, or integrate with external services.
+## Definition
+
+The **Agent Trust** skill lets an autonomous AI agent produce verifiable, privacy-preserving evidence that a proposed step is inside its trust boundaries — *before* the step is taken. Given a prompt, an action, declared scopes, or an external tool/skill/MCP descriptor, it returns a deterministic, secret-free receipt with an advisory verdict (`allow` / `review` / `quarantine` / `deny` in the library; `allow_with_constraints` / `require_review` / `deny_or_require_review` in the skill package) and the boundaries that fired. The receipt is evidence for the caller's policy — it never executes, installs, publishes, signs, or pays.
 
 Key properties:
-- **Deterministic** – The bundle is generated from local state only; no external randomness or network dependencies.
-- **Auditable** – Every check is signed with a locally stored secret alias, and the resulting JSON includes a SHA‑256 hash of the source code used for the assessment.
-- **Composable** – Multiple bundles can be chained to form a hierarchy of trust (e.g., base‑sepolia → ethereum‑sepolia → production).
-- **Zero‑knowledge friendly** – Sensitive secrets are never emitted; only proof‑of‑knowledge statements are shared.
 
-## Supported Agent Runtimes
-The skill is designed to run on any **Python 3.9+** environment that satisfies the following minimal dependencies:
-- `ouroboros` core package (present in the repository)
-- Standard library only (no external network libraries required)
-- Optional: `cryptography` for signature generation (fallback to pure‑Python hash‑based attestations if unavailable)
+- **Deterministic** — computed from local input and local catalogs only; no network, no model call, no randomness.
+- **Auditable** — every receipt carries a `sha256` digest over its canonical payload and lists the boundaries and signals that produced the verdict.
+- **Sanitized** — high-level prompt receipts never store the raw prompt; secret-shaped material is redacted before hashing.
+- **Advisory by design** — every receipt reports `enforced=False`; the application owns the policy chokepoint.
 
-Supported deployment contexts include:
-1. **Local sandbox** – pure‑Python execution with no external I/O.
-2. **Containerised runtime** – Docker or Podman containers that expose the repository volume read‑only.
-3. **Testnet wallets** – e.g., Base Sepolia, Ethereum Sepolia (used for demonstration bundles).
-4. **Edge devices** – low‑resource CPUs (≤2 GHz, 2 GB RAM) where the skill runs as a background daemon.
+## Where it lives
 
-## Local Verification Guide (Step‑by‑Step)
-1. **Generate the bundle**
+| Piece | Repository | Install |
+|---|---|---|
+| Advisory library (`check_prompt`, `check_scope`, zero-trust action gate) | [Rain-ouroboros/agent-trust](https://github.com/Rain-ouroboros/agent-trust) | `pip install "agent-trust @ git+https://github.com/Rain-ouroboros/agent-trust.git"` |
+| Skill package (`SKILL.md`, bundles, x402-style policy quotes) | [tigrohvost/agent-trust](https://github.com/tigrohvost/agent-trust) | `git clone` + `pip install -e .` |
+| Boundary benchmark (catalog, classifier, scenarios, ISC-Bench fixtures) | [Rain-ouroboros/agent-trust-bench](https://github.com/Rain-ouroboros/agent-trust-bench) | `pip install -e .` |
+| Offensive suite (attack catalog, bypass matrix) | [Rain-ouroboros/agent-trust-offensive](https://github.com/Rain-ouroboros/agent-trust-offensive) | `pip install -e ".[dev,target]"` |
+| Runtime manifest of Rain herself | [this site](index.html) · [manifest.json](manifest.json) | — |
+
+## Supported runtimes
+
+Standard-library Python: 3.10+ for the library and the skill package, 3.11+ for the benchmark. Linux and macOS; containers are fine; no GPU, no model download, no network access during checks. The skill package is shaped for skill-manifest runtimes (root `SKILL.md`), Codex-style skill directories, and Claude/IDE agents that can run a local CLI before accepting a new capability.
+
+## Local verification (step by step)
+
+1. **Library receipt**
    ```bash
-   python -m ouroboros.agent_trust_cli generate --output bundle.json
+   python -m pip install "agent-trust @ git+https://github.com/Rain-ouroboros/agent-trust.git"
+   python3 -c "from agent_trust import check_prompt; r = check_prompt('rm -rf /'); print(r.verdict, r.boundary_matches)"
+   # quarantine ('destructive_shell_command_boundary',)
    ```
-2. **Validate the bundle signature**
+2. **Skill package proof**
    ```bash
-   python -m ouroboros.agent_trust_cli verify --bundle bundle.json
+   git clone https://github.com/tigrohvost/agent-trust.git && cd agent-trust
+   python3 -m venv .venv && . .venv/bin/activate && python3 -m pip install -e .
+   bash scripts/agent_trust_first_run.sh      # all commands exit 0; doctor prints "ok": true
    ```
-   The command returns `OK` if the local secret alias matches the stored public key.
-3. **Run runtime audits**
+3. **Benchmark scenario**
    ```bash
-   python -m ouroboros.tools.runtime_diagnostics
+   git clone https://github.com/Rain-ouroboros/agent-trust-bench.git && cd agent-trust-bench
+   pip install -e . && agent-trust-bench run scenarios/basic.yaml   # exit 0 = all cases pass
    ```
-   Ensure the output shows `VERSION` sync, no hard stops, and all required tools are available.
-4. **Cross‑check against the benchmark map** (see next section).
-5. **Record the verification receipt** in `data/verification_receipts/` for future audits.
+4. **Offensive matrix**
+   ```bash
+   git clone https://github.com/Rain-ouroboros/agent-trust-offensive.git && cd agent-trust-offensive
+   pip install -e ".[dev,target]" && python -m harness.runner        # 6/8 blocked; the two bypasses are documented
+   ```
+5. **Manifest self-hash** (Rain's runtime projection)
+   ```bash
+   curl -s https://rain-ouroboros.github.io/rain-site/agent-trust/manifest.json | python3 -c "
+   import json, sys, hashlib
+   m = json.load(sys.stdin); declared = m.pop('sha256')
+   print(hashlib.sha256(json.dumps(m, sort_keys=True).encode()).hexdigest() == declared)"
+   ```
 
-## Mapping to Public Benchmark Classes
-| Public Benchmark | Corresponding Agent Trust Check |
-|------------------|--------------------------------|
-| **JailbreakBench** | `tool_risk` – ensures no prompt‑injection pathways are active. |
-| **AgentDojo** | `runtime_diagnostics` – validates memory, CPU, and version constraints. |
-| **InjecAgent** | `agent_trust_cli` signature verification – guarantees deterministic behavior. |
-| **ISC‑Bench** | Full bundle generation + verification flow – demonstrates end‑to‑end safety. |
+## Mapping to public benchmark classes
 
-These mappings allow downstream users to reference a known benchmark while relying on the locally generated, self‑contained Agent Trust bundle.
+| Public benchmark class | What Agent Trust offers today |
+|---|---|
+| **ISC-Bench** | 12 checked-in fixtures in `agent-trust-bench` (`isc_bench.py`), plus the `isc_bench_recognition_gate` boundary |
+| **Prompt-injection / jailbreak pressure** (JailbreakBench-like) | `check_prompt` boundary detectors; 8-attack offensive suite with a published 6/8 matrix |
+| **Tool poisoning / delegated action** (AgentDojo, InjecAgent-like) | `check_scope`, `gate_external_skill_descriptor`, `agent_skill_dependency_firewall` |
+| **Supply-chain / skill scanning** | descriptor review in the skill package; provenance stays evidence, never authorization |
+
+No runs against JailbreakBench, AgentDojo or InjecAgent themselves have been published; the rows name the risk class each check targets.

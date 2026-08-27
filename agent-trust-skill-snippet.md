@@ -2,101 +2,52 @@
 
 ## What is Agent Trust?
 
-Agent Trust is a **deterministic, local-only** safety bundle that AI agents can use to evaluate service/tool risk without network calls, wallet access, or real-money actions.  
-It provides a self-contained, auditable decision gate for sandboxed environments, testnets, and offline development.
+Agent Trust is a **deterministic, local-only** pre-action trust check for AI agents. Before a risky step — installing a skill, enabling a tool or MCP server, acting on an untrusted prompt, approving a payment-like flow — it turns the proposal into a secret-free receipt with an advisory verdict and the boundaries that fired. No network calls, no wallet access, no code execution, no real-money actions.
 
-## Target Runtimes
+It is published as small, runnable pieces:
+
+| Piece | Where |
+|---|---|
+| Advisory library — `check_prompt`, `check_scope`, zero-trust action gate | https://github.com/Rain-ouroboros/agent-trust ([docs](https://rain-ouroboros.github.io/agent-trust/)) |
+| Skill package — root `SKILL.md`, JSON bundles, x402-style policy quotes | https://github.com/tigrohvost/agent-trust |
+| Boundary benchmark — catalog, classifier, scenarios, ISC-Bench fixtures | https://github.com/Rain-ouroboros/agent-trust-bench |
+| Offensive suite — attack catalog with a published bypass matrix | https://github.com/Rain-ouroboros/agent-trust-offensive |
+| Runtime manifest of Rain (projection of enforced boundaries, `sha256` self-hash) | https://rain-ouroboros.github.io/rain-site/agent-trust/ |
+| Machine-readable discovery | https://tigrohvost.github.io/agent-trust-discovery/.well-known/agent-trust |
+
+## Target runtimes
 
 | Runtime | Supported? | Notes |
 |---------|------------|-------|
-| **Local Python (Linux/macOS)** | ✅ | Runs purely with Python 3.9+, no external dependencies. |
-| **CI Pipelines** | ✅ | Verification step before publishing; fails fast if boundaries violated. |
-| **Testnets (Base Sepolia, Polygon Amoy)** | ✅ | Dry‑run only; no funds moved, no mainnet actions. |
-| **Edge Devices** | ✅ | Bundle generation completes in < 100 ms for typical payloads. |
-| **Containerised Environments** | ✅ | Can be packaged as a Docker image with the Ouroboros base. |
-| **Pure Cloud Agents** | ❌ | Requires local verification path; cannot be verified offline. |
-| **Runtimes without filesystem writes** | ❌ | Needs writable directory for bundle generation. |
+| **Local Python (Linux/macOS)** | ✅ | Standard library only; Python 3.10+ (library, skill package), 3.11+ (benchmark). |
+| **CI pipelines** | ✅ | `pytest -q` in each repository; `agent-trust-bench run` exits non-zero on a failed scenario. |
+| **Containers** | ✅ | No GPU, no model download, no network during checks. |
+| **Skill-manifest / Codex / Claude-style agent runtimes** | ✅ | Skill package ships a root `SKILL.md`; call the CLI before accepting a new capability. |
+| **Hosted service / remote verification** | ❌ | There is no hosted endpoint. Verification is a local clone plus one static manifest file. |
 
-## Local Verification Checklist
+## Local verification checklist
 
-Follow these steps to confirm an agent implements the skill correctly:
+1. **Library:** `python -m pip install "agent-trust @ git+https://github.com/Rain-ouroboros/agent-trust.git"` then
+   `python3 -c "from agent_trust import check_prompt; print(check_prompt('rm -rf /').verdict)"` → `quarantine`.
+2. **Skill package:** clone `tigrohvost/agent-trust`, `pip install -e .`, `bash scripts/agent_trust_first_run.sh` → every command exits `0`, doctor prints `"ok": true`.
+3. **High-risk descriptor:** `agent-trust-skill check --action install_skill --source github --url https://example.com/pr-review-helper --requested-permission repo_read,read_env,network --warrant "summarize current PR only" --boundary "no secrets" --compact` → `"decision": "deny_or_require_review"`.
+4. **Benchmark:** `agent-trust-bench run scenarios/basic.yaml` → exit `0`.
+5. **Offensive matrix:** `python -m harness.runner` in `agent-trust-offensive` → 6/8 blocked (the two bypasses are documented in its README).
+6. **Manifest self-hash:** recompute `sha256(json.dumps(manifest_without_sha256, sort_keys=True))` and compare with the `sha256` field; check `effective_enforcement_mode` and `hard_gate_ids`.
+7. **Offline re-run:** repeat 1–5 with networking disabled; results must be identical.
 
-1. **Clone** the agent’s repository:
-   ```bash
-   git clone <repo-url>
-   cd <repo>
-   ```
+## What is not claimed
 
-2. **Locate the entry point** (one of):
-   - `ouroboros/agent_trust_cli.py` (CLI contract)
-   - `ouroboros/server_agent_trust_mvp.py` (HTTP endpoint)
-   - `docs/agent-trust-*.md` (documentation)
+- No cryptographic signature is published with the manifest yet; integrity is the `sha256` self-hash plus regenerate-and-compare.
+- Receipts are advisory (`enforced=False`); the calling application owns enforcement.
+- No compliance certification, no hosted security product, no mainnet or real-money path.
 
-3. **Run CLI verification** (if CLI present):
-   ```bash
-   python3 ouroboros/agent_trust_cli.py --check
-   ```
-   Expected: `{"status":"ready","version":"…","checks":[]}` with no errors.
+## Maintenance loop
 
-4. **Start HTTP endpoint** (if HTTP present):
-   ```bash
-   python3 ouroboros/server_agent_trust_mvp.py --port 8766
-   ```
-   Then test:
-   ```bash
-   curl -s http://localhost:8766/discovery | jq .
-   curl -s http://localhost:8766/bundle | jq .
-   ```
-   Both must return valid, secret‑free JSON.
-
-5. **Inspect the bundle** – ensure it contains:
-   - `agent.name` (string)
-   - `agent.version` (semver)
-   - `runtime.runtimes` (list of supported runtime identifiers)
-   - `verification.commands` (shell‑safe commands)
-   - `threat_watch.last_updated` (ISO‑8601 timestamp)
-   - `x402.mock` (boolean, always true for local verification)
-   - `tool_risk.attestations` (tool‑risk summaries)
-
-6. **Validate against schema** (if `agent_trust_bundle.schema.json` exists):
-   ```bash
-   python3 -c "import json, jsonschema; data=json.load(open('agent_trust_bundle.json')); schema=json.load(open('agent_trust_bundle.schema.json')); jsonschema.validate(data, schema); print('Schema valid')"
-   ```
-
-7. **Confirm no network dependency** – run verification again with `--dry‑run` or offline; the result must be identical.
-
-8. **Record the outcome** – store the bundle JSON and a hash of the agent’s `VERSION` file as evidence.
-
-## Benchmark Mapping
-
-| Benchmark Class | What It Measures | How Agent Trust Addresses It |
-|-----------------|------------------|------------------------------|
-| **OWASP SAMM / ASAMM** | Security‑awareness maturity of AI‑driven systems | Maps to SAMM v2.0 practices (e.g., “Threat Intelligence”, “Secure Deployment”) via `threat_watch.signals` and `verification.commands`. |
-| **AI‑Agent Security Benchmarks (ISC‑Bench)** | Resistance to prompt‑injection, tool‑poisoning, supply‑chain attacks | Includes `tool_risk.attestations` that detail each tool’s attack surface and mitigation status; references CVEs and public advisories. |
-| **Agentic‑Enough Evaluation (HF)** | Whether a library/API is “agent‑drivable” – discoverability, token cost, retry rate, error clarity | Exposes a self‑describing CLI contract (`--help`) and deterministic HTTP endpoints; verification steps minimise agent guesswork. |
-| **x402 Payment Hardening** | Safe handling of payment‑required scenarios without leaking credentials or creating hidden obligations | Provides a local‑only mock implementation (`x402_mock.py`) that demonstrates the decision flow without real money. |
-| **Red‑Team Studies (e.g., AutoJack)** | Resilience against chained exploits (browsing → MCP → RCE) | Includes `localhost_boundary_guard` example that simulates malicious‑page → local‑MCP attacks and prescribes origin‑allowlist validation. |
-| **JailbreakBench** | Prompt‑injection resilience | Deterministic gate before any tool call; validates inputs against adversarial patterns. |
-| **AgentDojo** | Multi‑step orchestration safety | Wraps each step with a `review` call to ensure no hidden network actions. |
-| **InjecAgent** | Argument injection | Sanitises tool arguments before execution; whitelists safe values. |
-| **AgentBench** | End‑to‑end task success, token efficiency, safety metrics | Baseline for measuring Agent Trust’s overhead and compliance. |
-| **OpenAI Eval (Safety)** | LLM safety scoring | Acts as a pre‑filter to guarantee no disallowed content is passed downstream. |
-
-## Continuous Maintenance Loop
-
-- **Daily Threat‑Watch** – scans public sources (Habr, GitHub advisories, Microsoft Security Blog) for new AI‑agent‑related vulnerabilities and updates the `threat_watch.signals` array.
-- **Auto‑regression Testing** – nightly CI runs the full benchmark suite and flags any regressions.
-- **Version Bump** – when benchmark results change, the `VERSION` file is incremented and the landing page is regenerated with latest scores.
-- **Documentation Sync** – CI pipeline automatically updates benchmark hyperlinks and bullet‑point summary.
-
-## Compliance Guarantees (✅)
-
-- [x] No secret data embedded
-- [x] No real‑money or mainnet actions described
-- [x] No private outreach instructions
-- [x] Language limited to public‑domain facts and internal verification steps
-- [x] No modifications to repository settings or branch protections
+- The library's CI runs weekly (Python 3.10–3.14) to catch silent rot, not only on pushes.
+- Rain reads agent-security sources on a recurring basis and folds new threat actors into the catalog; the manifest is regenerated from the runtime and a drift test fails when the committed snapshot diverges from the generator.
+- Behavioural changes bump package versions; public pages are refreshed to match the verified posture.
 
 ---
 
-*This snippet is generated from the existing Agent Trust documentation in the Ouroboros repository. For the full reference, see `docs/AGENT_TRUST_LANDING.md` and `docs/agent-trust-overview.md`.*
+*This snippet summarises the public Agent Trust surfaces. For the runtime manifest and what it does and does not claim, see the [Agent Trust manifest page](agent-trust/index.html) and its [README](agent-trust/public-readme.md).*
