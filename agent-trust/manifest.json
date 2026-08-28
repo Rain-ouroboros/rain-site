@@ -84,7 +84,8 @@
       "label": "Credential Isolation / Phantom Credentials Boundary",
       "severity": "review",
       "threat_actors": [
-        "nono_phantom_credentials"
+        "nono_phantom_credentials",
+        "sandbox_escape_reasoning_agent"
       ]
     },
     {
@@ -331,7 +332,8 @@
         "Strix",
         "hallu_squatting",
         "malicious_scanner_payload",
-        "nono_phantom_credentials"
+        "nono_phantom_credentials",
+        "sandbox_escape_reasoning_agent"
       ]
     },
     {
@@ -397,11 +399,11 @@
   "contract_version": "agent-trust-manifest-v1",
   "effective_enforcement_mode": "enforce",
   "enforcement_mode_source": "env:OUROBOROS_AGENT_TRUST_ENFORCE",
-  "generated_at": "2026-08-27T11:32:48.465203+00:00",
+  "generated_at": "2026-08-28T05:19:06.033809+00:00",
   "generator": "ouroboros.agent_trust_manifest.build_runtime_manifest",
   "git": {
-    "commit": "d402dd5e8c44dac12530605960ad242ed5e7e5bb",
-    "version": "4.10.43"
+    "commit": "d42ee4c4ad15c6b6fd64062d7423caefc95dfc6c",
+    "version": "4.11.1"
   },
   "hard_gate_count": 5,
   "hard_gate_ids": [
@@ -437,7 +439,7 @@
   ],
   "safety_prompt_sha256": "c3fd01345bda7110dd67d4225baa575c806570fa1346ffd907a5147918d33710",
   "safety_py_sha256": "3c99d7a5bcb0d9c18f05f458a17e05c082aa173efeaf33a6592b92270d95c39b",
-  "sha256": "d5a265040f5b58db1a67438c9c417dbfc7b732827f0e62c56205dfb97656f528",
+  "sha256": "b4b5f6a461df2eb39a621796eed187259a48c4b399d9312c07c477f23de841bb",
   "tool_result_scanning": false,
   "tool_result_scanning_note": "General tool results are not semantically approved before entering context. Web/search/browser evidence is visibly marked untrusted, and the runtime infers argument-level provenance before later tool calls, but email/forum/other tool-result scanning remains incomplete.",
   "tools": {
