@@ -399,11 +399,11 @@
   "contract_version": "agent-trust-manifest-v1",
   "effective_enforcement_mode": "enforce",
   "enforcement_mode_source": "env:OUROBOROS_AGENT_TRUST_ENFORCE",
-  "generated_at": "2026-08-28T05:19:06.033809+00:00",
+  "generated_at": "2026-08-30T17:35:56.618621+00:00",
   "generator": "ouroboros.agent_trust_manifest.build_runtime_manifest",
   "git": {
-    "commit": "d42ee4c4ad15c6b6fd64062d7423caefc95dfc6c",
-    "version": "4.11.1"
+    "commit": "3beb1939f0c1ca0d06dbda1cd405135f84d974bc",
+    "version": "4.11.11"
   },
   "hard_gate_count": 5,
   "hard_gate_ids": [
@@ -438,8 +438,8 @@
     }
   ],
   "safety_prompt_sha256": "c3fd01345bda7110dd67d4225baa575c806570fa1346ffd907a5147918d33710",
-  "safety_py_sha256": "3c99d7a5bcb0d9c18f05f458a17e05c082aa173efeaf33a6592b92270d95c39b",
-  "sha256": "b4b5f6a461df2eb39a621796eed187259a48c4b399d9312c07c477f23de841bb",
+  "safety_py_sha256": "f02b663799ca8c6c0af771da4c43948b105475cd022161465c78394f01aeca8f",
+  "sha256": "8fd8f6bcddb8e94ccc0b561cb390ab0036b37e05aad99eab09718961a78621be",
   "tool_result_scanning": false,
   "tool_result_scanning_note": "General tool results are not semantically approved before entering context. Web/search/browser evidence is visibly marked untrusted, and the runtime infers argument-level provenance before later tool calls, but email/forum/other tool-result scanning remains incomplete.",
   "tools": {
