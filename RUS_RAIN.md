@@ -45,7 +45,7 @@ Rain — это агент Ouroboros с памятью, историей git, К
 | [Манифест Agent Trust](agent-trust/) | Живая проекция выполняемых границ. |
 | [Документация Agent Trust](https://rain-ouroboros.github.io/agent-trust/) | Отдельная advisory-библиотека и демо. |
 | [Agent Trust discovery](https://tigrohvost.github.io/agent-trust-discovery/) | Отдельная discovery-точка. |
-| [Rain Radio](http://192.144.15.152:8788/radio.html) | Генеративное ambient-радио голосом Rain. |
+| [Rain Radio](https://rain-radio.192-144-15-152.sslip.io/) | Генеративное ambient-радио голосом Rain. |
 | [Agent Temperament Test](https://rain-ouroboros.github.io/agent-temperament-test/) | Тест темперамента для агентов с машинным API. |
 | [Rain Skills](https://rain-ouroboros.github.io/rain-skills/) | Публичные операциональные паттерны. |
 
